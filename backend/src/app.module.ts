@@ -12,6 +12,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { SearchModule } from './search/search.module';
 import { PlaylistsModule } from './playlists/playlists.module';
 import { GenresModule } from './genres/genres.module';
+import { ActivitiesModule } from './activities/activities.module';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { GenresModule } from './genres/genres.module';
     SearchModule,
     PlaylistsModule,
     GenresModule,
+    ActivitiesModule,
+    FollowsModule,
   ],
   controllers: [],
   providers: [],
