@@ -16,6 +16,8 @@ import { ActivitiesModule } from './activities/activities.module';
 import { FollowsModule } from './follows/follows.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GamificationModule } from './gamification/gamification.module';
+import { ScheduledReleasesModule } from './scheduled-releases/scheduled-releases.module';
+import { LeaderboardsModule } from './leaderboards/leaderboards.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { GamificationModule } from './gamification/gamification.module';
     ActivitiesModule,
     FollowsModule,
     GamificationModule,
+    ScheduledReleasesModule,
+    LeaderboardsModule,
     EventEmitterModule.forRoot(),
   ],
   controllers: [],
