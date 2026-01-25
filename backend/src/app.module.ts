@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { StorageModule } from './storage/storage.module';
 import { ArtistsModule } from './artists/artists.module';
 import { TracksModule } from './tracks/tracks.module';
@@ -14,6 +15,7 @@ import { PlaylistsModule } from './playlists/playlists.module';
 import { GenresModule } from './genres/genres.module';
 import { ActivitiesModule } from './activities/activities.module';
 import { FollowsModule } from './follows/follows.module';
+import { ScheduledReleasesModule } from './scheduled-releases/scheduled-releases.module';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { FollowsModule } from './follows/follows.module';
       synchronize: process.env.NODE_ENV !== 'production',
       logging: process.env.NODE_ENV === 'development',
     }),
+    ScheduleModule.forRoot(),
     StorageModule,
     ArtistsModule,
     TracksModule,
@@ -45,6 +48,7 @@ import { FollowsModule } from './follows/follows.module';
     GenresModule,
     ActivitiesModule,
     FollowsModule,
+    ScheduledReleasesModule,
   ],
   controllers: [],
   providers: [],
