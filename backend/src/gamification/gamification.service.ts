@@ -37,7 +37,7 @@ export class GamificationService implements OnModuleInit {
         @InjectRepository(Follow)
         private readonly followRepo: Repository<Follow>,
         private readonly stellarService: StellarService,
-        // private readonly notificationsService: NotificationsService,
+        private readonly notificationsService: NotificationsService,
     ) { }
 
     async onModuleInit() {
@@ -92,6 +92,17 @@ export class GamificationService implements OnModuleInit {
             if (tipsSentCount >= 1) await this.awardBadge(user.id, 'First Tip');
             if (tipsSentCount >= 10) await this.awardBadge(user.id, '10 Tips');
             if (tipsSentCount >= 100) await this.awardBadge(user.id, '100 Tips');
+
+            // Genre Explorer logic
+            const genreStats = await this.tipRepo.createQueryBuilder('tip')
+                .leftJoin('tip.artist', 'artist')
+                .select('COUNT(DISTINCT artist.genre)', 'count')
+                .where('tip.senderAddress = :wallet', { wallet: user.walletAddress })
+                .andWhere('tip.status = :status', { status: TipStatus.VERIFIED })
+                .getRawOne();
+
+            const distinctGenres = parseInt(genreStats.count || '0', 10);
+            if (distinctGenres >= 5) await this.awardBadge(user.id, 'Genre Explorer');
 
             // Early Supporter logic
             // Find tips for this artist
@@ -178,13 +189,17 @@ export class GamificationService implements OnModuleInit {
         // Wait, Follow entity has followingId. We need to see if that ID belongs to a User who is an Artist? 
         // Or is followingId the ArtistId?
         // Check Follow entity logic. Usually followingId is UserID.
-        // If User is Artist?
 
         const user = await this.userRepo.findOne({ where: { id: followingId } });
         if (!user) return;
 
         if (user.isArtist) {
-            const followers = await this.followRepo.count({ where: { followingId } });
+            const followers = await this.followRepo.count({
+                where: {
+                    followingId,
+                    followingType: FollowingType.ARTIST
+                }
+            });
             if (followers >= 100) await this.awardBadge(user.id, 'Rising Star');
         }
     }
@@ -208,6 +223,12 @@ export class GamificationService implements OnModuleInit {
             await this.userBadgeRepo.save(userBadge);
 
             this.logger.log(`Awarded badge ${badgeName} to user ${userId}`);
+
+            // Attach badge for notification
+            userBadge.badge = badge;
+
+            // Send achievement notification
+            this.notificationsService.notifyUserOfBadge(userId, userBadge);
 
             // NFT Minting
             if (process.env.ENABLE_NFT_MINTING === 'true') {
