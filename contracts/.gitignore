@@ -1,0 +1,11 @@
+# Ignore build artifacts
+target/
+.target
+*.wasm
+
+# Ignore contract deployment info
+.contract-id
+.soroban/
+
+# Cargo lock for libraries (keep for binaries)
+# Cargo.lock
